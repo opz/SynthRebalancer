@@ -9,7 +9,9 @@ import {
 } from "./SynthetixInterface.sol";
 
 /**
- * Match a Synthetix debt portfolio to the total distribution of Synths
+ * @notice Tool for managing a Synthetix account
+ * @notice Rebalance an account's synths to match the global distribution of synths
+ * @notice Useful to keep the debt to synth ratio constant when staking SNX
  */
 contract SynthRebalancer is Ownable, ReentrancyGuard {
     //----------------------------------------
@@ -43,7 +45,7 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     // Scales values for decimal math
     uint256 private constant DECIMALS_UNIT = 1e18;
 
-    // Base currency for comparing Synth value
+    // Base currency for comparing synth value
     bytes32 private constant BASE_CURRENCY_KEY = "sUSD";
 
     //----------------------------------------
@@ -59,7 +61,7 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     // Emits when a rebalancing is complete
     event Rebalance(address account);
 
-    // Emits after a Synth exchange during rebalancing 
+    // Emits after a synth exchange during rebalancing 
     event Exchange(
         address account,
         bytes32 sourceCurrencyKey,
@@ -88,7 +90,7 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     //----------------------------------------
 
     /**
-     * @notice Rebalance an account's portfolio of Synths to match the global distribution
+     * @notice Rebalance an account's synths to match the global distribution of synths
      * @dev Uses reentrancy guard for call to Synthetix contract from `balanceSynths`.
      * @dev TODO: Add a fee paid to the owner
      */
@@ -101,18 +103,19 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
 
         SynthNode[] memory synthGraph = getSynthGraph(accountState);
 
+        // Greedy algorithm for rebalancing
         for (uint256 i = 0; i < synthGraph.length; i++) {
 
-            // Check if a synth balance needs to be reduced
+            // Check if the synth balance needs to be reduced
             if (synthGraph[i].synthValue > synthGraph[i].targetSynthValue) {
                 for (uint256 j = 0; j < synthGraph.length; j++) {
 
-                    // Find a synth that needs a higher balance to exchange to
+                    // Check if the other synth balance needs to be increased
                     if (
                         i != j
                         && synthGraph[i].synthValue < synthGraph[i].targetSynthValue
                     ) {
-                        // Rebalance the two synths to bring them closer to their targets
+                        // Bring synths closer to their targets by exchanging one for the other
                         balanceSynths(synthGraph[i], synthGraph[j], accountState);
                     }
                 }
@@ -235,9 +238,9 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     //----------------------------------------
 
     /**
-     * @notice Get a Synth graph for an account
-     * @param accountState The account state to get the Synth graph from
-     * @return The Synth graph
+     * @notice Get a synth graph for an account
+     * @param accountState The account state to get the synth graph from
+     * @return The synth graph
      */
     function getSynthGraph(AccountState memory accountState)
         private
@@ -257,10 +260,10 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Get a Synth node
-     * @param currencyKey The type of Synth to get a node for
-     * @param accountState The accountState used for calculating the Synth node
-     * @return The Synth node
+     * @notice Get a synth node
+     * @param currencyKey The type of synth to get a node for
+     * @param accountState The accountState used for calculating the synth node
+     * @return The synth node
      */
     function getSynthNode(bytes32 currencyKey, AccountState memory accountState)
         private
@@ -274,10 +277,10 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Get the most recent version of the specified Synth node
-     * @param node The Synth node to update
-     * @param accountState The accountState used for calculating the Synth node
-     * @return Latest version of Synth node
+     * @notice Get the most recent version of the specified synth node
+     * @param node The synth node to update
+     * @param accountState The accountState used for calculating the synth node
+     * @return Latest version of synth node
      */
     function getUpdatedSynthNode(SynthNode memory node, AccountState memory accountState)
         private
