@@ -3,10 +3,7 @@ pragma solidity >=0.5.15 <0.7.0;
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import {
-    SynthInterface,
-    SynthetixInterface
-} from "./SynthetixInterface.sol";
+import {SynthInterface, SynthetixInterface} from "./SynthetixInterface.sol";
 
 /**
  * @notice Tool for managing a Synthetix account
@@ -199,9 +196,9 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
     ) private {
         // Get difference between current and target values for both synths
         uint256 synthOverValueToExchange = synthOverTarget.synthValue
-        .sub(synthOverTarget.targetSynthValue);
+            .sub(synthOverTarget.targetSynthValue);
         uint256 synthUnderValueToExchange = synthUnderTarget.targetSynthValue
-        .sub(synthUnderTarget.synthValue);
+            .sub(synthUnderTarget.synthValue);
 
         // Do not exchange more than necessary or more than is available
         uint256 valueToExchange = synthOverValueToExchange > synthUnderValueToExchange
@@ -210,10 +207,10 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
 
         // Amount of synth units to exchange
         uint256 sourceAmount = synthOverTarget.synthValue
-        .mul(DECIMALS_UNIT)
-        .div(synthOverTarget.balance)
-        .mul(valueToExchange)
-        .div(DECIMALS_UNIT);
+            .mul(DECIMALS_UNIT)
+            .div(synthOverTarget.balance)
+            .mul(valueToExchange)
+            .div(DECIMALS_UNIT);
 
         synthetix.exchange(
             synthOverTarget.currencyKey,
