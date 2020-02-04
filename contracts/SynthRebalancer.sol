@@ -114,6 +114,11 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
                     ) {
                         // Bring synths closer to their targets by exchanging one for the other
                         balanceSynths(synthGraph[i], synthGraph[j], accountState);
+
+                        // Synth has hit target and no longer needs to be reduced
+                        if (synthGraph[i].synthValue <= synthGraph[i].targetSynthValue) {
+                            break;
+                        }
                     }
                 }
             }
