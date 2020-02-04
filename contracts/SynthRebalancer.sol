@@ -110,7 +110,7 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
                     // Check if the other synth balance needs to be increased
                     if (
                         i != j
-                        && synthGraph[i].synthValue < synthGraph[i].targetSynthValue
+                        && synthGraph[j].synthValue < synthGraph[j].targetSynthValue
                     ) {
                         // Bring synths closer to their targets by exchanging one for the other
                         balanceSynths(synthGraph[i], synthGraph[j], accountState);
