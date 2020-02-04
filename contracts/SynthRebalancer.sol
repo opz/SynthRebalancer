@@ -146,9 +146,9 @@ contract SynthRebalancer is Ownable, ReentrancyGuard {
         bytes32[] memory currencyKeys = synthetix.availableCurrencyKeys();
         for (uint256 i = 0; i < currencyKeys.length; i++) {
             total = total.add(synthetix.effectiveValue(
-                currencyKey,
+                currencyKeys[i],
                 synthetix.synths(currencyKeys[i]).balanceOf(account),
-                currencyKeys[i]
+                currencyKey
             ));
         }
 
